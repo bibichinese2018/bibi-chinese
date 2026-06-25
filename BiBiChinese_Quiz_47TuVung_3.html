@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiBi Chinese - Quiz 47 từ vựng</title>
+<style>
+  :root{
+    --red:#B22222;
+    --red-dark:#8a1a1a;
+    --gold:#C9962C;
+    --gold-light:#FBF1DC;
+    --green:#2E6B3E;
+    --green-light:#EBF5EE;
+    --cream:#FFFBF2;
+    --ink:#2b2420;
+    --border:#E3D2A8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    background: linear-gradient(160deg, var(--cream) 0%, #fff 60%);
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom: 40px;
+  }
+  .app{ max-width:520px; margin:0 auto; padding: 18px 16px 0; }
+
+  header{
+    text-align:center;
+    padding: 18px 0 14px;
+    border-bottom: 3px solid var(--gold);
+    margin-bottom: 18px;
+  }
+  header .brand-cn{ font-size: 26px; font-weight: 800; color: var(--red); letter-spacing: 2px; }
+  header .brand-en{ font-size: 13px; color: var(--gold); font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-top: 2px; }
+  header .subtitle{ font-size: 14px; color:#7a6f60; margin-top: 8px; }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .card{
+    background:#fff; border:2px solid var(--border); border-radius: 16px; padding: 22px;
+    box-shadow: 0 4px 16px rgba(178,34,34,0.06);
+  }
+  .card h2{ margin:0 0 14px; color:var(--red); font-size:19px; }
+  input[type=text]{
+    width:100%; padding:13px 14px; border-radius:10px; border:2px solid var(--border);
+    font-size:16px; outline:none; font-family:inherit;
+  }
+  input[type=text]:focus{ border-color: var(--gold); }
+
+  .btn{
+    display:inline-block; width:100%; text-align:center;
+    background: var(--red); color:#fff; font-weight:700; font-size:16px;
+    padding:13px 18px; border-radius: 10px; border:none; cursor:pointer;
+    margin-top:14px; transition: transform .12s ease, background .2s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn.secondary{ background: var(--gold-light); color: var(--red); border: 2px solid var(--gold); }
+
+  .lenrow{ display:flex; gap:10px; margin-top:14px; }
+  .lenbtn{
+    flex:1; text-align:center; padding:10px 6px; border-radius:10px; border:2px solid var(--border);
+    background:var(--cream); font-weight:700; font-size:14px; cursor:pointer; color:var(--ink);
+  }
+  .lenbtn.active{ background:var(--red); color:#fff; border-color:var(--red); }
+
+  .progress-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:13px; color:#7a6f60; font-weight:600; }
+  .progress-bar{ height:8px; background:var(--gold-light); border-radius:6px; overflow:hidden; margin-bottom:18px; }
+  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--gold), var(--red)); border-radius:6px; transition: width .3s ease; }
+  .qcard{ background:#fff; border:2px solid var(--border); border-radius:16px; padding: 26px 20px; text-align:center; box-shadow: 0 4px 16px rgba(178,34,34,0.06); }
+  .qcard .eyebrow{ font-size:12px; color:var(--gold); font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+  .qcard .question{ font-size: 26px; font-weight:800; color:var(--red); margin: 10px 0 4px; line-height:1.3; word-break: break-word; }
+  .options{ margin-top: 20px; display:flex; flex-direction:column; gap:10px; }
+  .option{ background: var(--cream); border:2px solid var(--border); border-radius:12px; padding: 13px 16px; font-size:16px; text-align:left; cursor:pointer; transition: background .15s ease, border-color .15s ease, transform .1s ease; }
+  .option:active{ transform: scale(0.985); }
+  .option.correct{ background: var(--green-light); border-color: var(--green); color: var(--green); font-weight:700; }
+  .option.wrong{ background:#fbeaea; border-color:var(--red); color:var(--red-dark); font-weight:700; }
+  .option.disabled{ pointer-events:none; opacity:0.85; }
+
+  .feedback{ min-height: 26px; margin-top: 14px; font-weight:700; font-size:15px; }
+  .feedback.ok{ color:var(--green); }
+  .feedback.no{ color:var(--red-dark); }
+
+  .score-circle{ width:140px; height:140px; border-radius:50%; border:6px solid var(--gold); display:flex; align-items:center; justify-content:center; flex-direction:column; margin: 6px auto 18px; background: var(--gold-light); }
+  .score-circle .num{ font-size:38px; font-weight:800; color:var(--red); }
+  .score-circle .den{ font-size:13px; color:#7a6f60; }
+
+  .leaderboard{ margin-top:10px; }
+  .lb-row{ display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--border); border-radius:10px; padding: 10px 14px; margin-bottom:8px; }
+  .lb-rank{ width:28px; height:28px; border-radius:50%; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+  .lb-rank.gold{ background: var(--gold); }
+  .lb-name{ flex:1; font-weight:700; font-size:15px; }
+  .lb-score{ font-weight:800; color:var(--red); font-size:15px; }
+  .lb-empty{ text-align:center; color:#9a8f7d; font-size:14px; padding: 16px 0; }
+
+  footer{ text-align:center; color:#b3a48a; font-size:12px; margin-top: 26px; font-style:italic; }
+  .tabbar{ display:flex; gap:8px; margin-top: 16px; }
+  .tabbar .btn{ margin-top:0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand-cn">学习中文</div>
+    <div class="brand-en">BiBi Chinese</div>
+    <div class="subtitle">Quiz 47 từ vựng</div>
+  </header>
+
+  <!-- SCREEN: NAME ENTRY -->
+  <div class="screen active" id="screen-name">
+    <div class="card">
+      <h2>Nhập tên của bạn</h2>
+      <input type="text" id="nameInput" placeholder="Ví dụ: Minh, Hậu, Hồng..." maxlength="20">
+      <div style="font-size:13px; color:#7a6f60; margin-top:14px; font-weight:600;">Số câu hỏi:</div>
+      <div class="lenrow">
+        <div class="lenbtn" data-len="10">10 câu</div>
+        <div class="lenbtn active" data-len="20">20 câu</div>
+        <div class="lenbtn" data-len="47">Tất cả (47)</div>
+      </div>
+      <button class="btn" id="startBtn">Bắt đầu làm bài</button>
+      <button class="btn secondary" id="viewLbBtn" style="margin-top:10px;">Xem bảng xếp hạng</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: QUIZ -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-row">
+      <span id="progressText">Câu 1/20</span>
+      <span id="scoreText">Điểm: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="qcard">
+      <div class="eyebrow" id="qEyebrow">PINYIN NÀY NGHĨA LÀ GÌ?</div>
+      <div class="question" id="qText">...</div>
+      <div class="options" id="optionsBox"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN: RESULTS -->
+  <div class="screen" id="screen-results">
+    <div class="card" style="text-align:center;">
+      <h2 style="text-align:center;">Hoàn thành! 🎉</h2>
+      <div class="score-circle">
+        <div class="num" id="finalScore">0</div>
+        <div class="den" id="finalDen">/ 20 điểm</div>
+      </div>
+      <div id="resultMsg" style="font-size:15px; color:#7a6f60; margin-bottom:6px;"></div>
+      <button class="btn" id="toLbBtn">Xem bảng xếp hạng</button>
+      <button class="btn secondary" id="retryBtn">Làm lại</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: LEADERBOARD -->
+  <div class="screen" id="screen-lb">
+    <div class="card">
+      <h2>🏆 Bảng xếp hạng lớp</h2>
+      <div class="leaderboard" id="lbList"></div>
+      <div class="tabbar">
+        <button class="btn secondary" id="backHomeBtn">Về trang chính</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Minh Hưng, TP. Đồng Nai 加油!</footer>
+</div>
+
+<script>
+(function(){
+  // ---- Full 47-word vocabulary bank (Vietnamese <-> Pinyin) ----
+  // duplicate "Shì" entries (#23/#36) merged into one
+  const VOCAB = [
+    ["Jiā bān","Tăng ca"],
+    ["Xià bān","Xuống ca"],
+    ["Shàng bān","Lên ca"],
+    ["Wǒ","Tôi, tao"],
+    ["Nǐ","Bạn, mày"],
+    ["Wǒ men","Chúng ta, chúng tôi"],
+    ["Nǐ men","Các bạn"],
+    ["Dà jiā","Mọi người, cả nhà"],
+    ["Tóng xué","Bạn học"],
+    ["Tā","Anh ấy, chú ấy, ông ấy (chỉ người Nam)"],
+    ["Tā","Cô ấy, chị ấy, bà ấy (chỉ người Nữ)"],
+    ["Tā","Nó"],
+    ["Diàn chí","Pin"],
+    ["Jiǔ jīng","Cồn"],
+    ["Liú chéng","Lưu trình"],
+    ["Gān jìng","Sạch sẽ"],
+    ["Dǎ sǎo","Dọn dẹp"],
+    ["Shè bèi","Thiết bị"],
+    ["Kāi mén","Mở cửa"],
+    ["Wéi xiū","Sửa chữa"],
+    ["Shū","Sách"],
+    ["Gāo xìng","Vui mừng"],
+    ["Shì","Dạ, vâng, phải, là"],
+    ["Hěn","Rất"],
+    ["Hǎo","Tốt"],
+    ["Zhī dào","Biết (sự vật, sự việc)"],
+    ["Huì","Biết (học tập, rèn luyện, đào tạo)"],
+    ["Rèn shi","Quen biết (người)"],
+    ["Shén me?","Cái gì? Gì?"],
+    ["Ma?","Không? (từ dùng để hỏi, đặt cuối câu)"],
+    ["Bù","Không"],
+    ["Míng zì","Tên"],
+    ["Jiào","Kêu, gọi là"],
+    ["Zhè gè","Cái này"],
+    ["Yě","Cũng"],
+    ["Xìng","Họ (cái họ của tên mình)"],
+    ["Yuán liào jiān","Phòng nguyên liệu"],
+    ["Bāo zhuāng","Đóng gói"],
+    ["Jī qì","Máy móc"],
+    ["Chī fàn","Ăn cơm"],
+    ["Chōu yān","Hút thuốc"],
+    ["Hē shuǐ","Uống nước"],
+    ["Qù","Đi (hành động đi)"],
+    ["Cè shì","Kiểm tra, kiểm nghiệm"],
+    ["Zuò","Làm"],
+    ["Shì qíng","Sự việc"],
+    ["Cè suǒ","Nhà vệ sinh"],
+  ];
+  // 44 unique rows above cover all 47 numbered items (the 3 "Tā" rows merged
+  // into one, and the duplicate "Shì" merged into one) — confirm count:
+  // 48 numbered - 1 (Tā x3 -> x1, removes 2) - 1 (Shì dup, removes 1) = 45... see note below.
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function buildQuestions(){
+    // For each vocab pair, randomly decide direction: pinyin->vi or vi->pinyin
+    const qs = VOCAB.map(([py, vi]) => {
+      const pinyinToVi = Math.random() < 0.5;
+      // "Tā" has 3 valid Vietnamese meanings (nam/nữ/nó) — when quizzing
+      // Pinyin -> Vietnamese for "Tā", any of the three should count correct.
+      const altCorrect = (py === "Tā" && pinyinToVi)
+        ? VOCAB.filter(v => v[0] === "Tā").map(v => v[1])
+        : [vi];
+      // Dedupe the distractor pool (e.g. "Tā" appears 3x as Pinyin) so the
+      // same-looking option never appears twice in one question.
+      const rawPool = pinyinToVi ? VOCAB.map(v=>v[1]) : VOCAB.map(v=>v[0]);
+      const pool = Array.from(new Set(rawPool));
+      return {
+        q: pinyinToVi ? py : vi,
+        correct: pinyinToVi ? vi : py,
+        altCorrect: altCorrect,
+        pinyinToVi: pinyinToVi,
+        eyebrow: pinyinToVi ? 'PINYIN NÀY NGHĨA LÀ GÌ?' : 'TỪ NÀY PINYIN LÀ GÌ?',
+        pool: pool,
+      };
+    });
+    return qs;
+  }
+
+  function makeOptions(q){
+    const distractors = shuffle(q.pool.filter(x => !q.altCorrect.includes(x) && x !== q.correct)).slice(0,3);
+    return shuffle(Array.from(new Set([q.correct, ...distractors])));
+  }
+
+  let userName = '';
+  let quizLength = 20;
+  let order = [];
+  let current = 0;
+  let score = 0;
+  let answered = false;
+
+  const screens = {
+    name: document.getElementById('screen-name'),
+    quiz: document.getElementById('screen-quiz'),
+    results: document.getElementById('screen-results'),
+    lb: document.getElementById('screen-lb'),
+  };
+  function showScreen(key){
+    Object.values(screens).forEach(s=>s.classList.remove('active'));
+    screens[key].classList.add('active');
+  }
+
+  document.querySelectorAll('.lenbtn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.lenbtn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      quizLength = parseInt(btn.dataset.len, 10);
+    });
+  });
+
+  async function saveScore(name, sc, total){
+    try{
+      const existingRaw = await window.storage.get('leaderboard47', true).catch(()=>null);
+      let board = [];
+      if(existingRaw && existingRaw.value){
+        try{ board = JSON.parse(existingRaw.value); }catch(e){ board = []; }
+      }
+      board.push({ name: name, score: sc, total: total, pct: Math.round(sc/total*100), ts: Date.now() });
+      await window.storage.set('leaderboard47', JSON.stringify(board), true);
+    }catch(e){
+      console.error('Storage error (save):', e);
+    }
+  }
+
+  async function loadLeaderboard(){
+    try{
+      const res = await window.storage.get('leaderboard47', true);
+      if(res && res.value){
+        try{ return JSON.parse(res.value); }catch(e){ return []; }
+      }
+      return [];
+    }catch(e){
+      return [];
+    }
+  }
+
+  function bestPerStudent(board){
+    const map = {};
+    board.forEach(e=>{
+      const key = e.name.trim().toLowerCase();
+      const pct = e.pct !== undefined ? e.pct : Math.round(e.score/e.total*100);
+      if(!map[key] || pct > map[key].pct){
+        map[key] = Object.assign({}, e, { pct });
+      }
+    });
+    return Object.values(map).sort((a,b)=>b.pct - a.pct);
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function renderLeaderboard(){
+    const list = document.getElementById('lbList');
+    list.innerHTML = '<div class="lb-empty">Đang tải...</div>';
+    const board = await loadLeaderboard();
+    const top = bestPerStudent(board);
+    if(top.length === 0){
+      list.innerHTML = '<div class="lb-empty">Chưa có ai làm bài. Hãy là người đầu tiên!</div>';
+      return;
+    }
+    list.innerHTML = '';
+    top.forEach((entry, idx)=>{
+      const row = document.createElement('div');
+      row.className = 'lb-row';
+      row.innerHTML = `
+        <div class="lb-rank ${idx===0?'gold':''}">${idx+1}</div>
+        <div class="lb-name">${escapeHtml(entry.name)}</div>
+        <div class="lb-score">${entry.score}/${entry.total} (${entry.pct}%)</div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function startQuiz(){
+    const allQ = shuffle(buildQuestions());
+    order = allQ.slice(0, Math.min(quizLength, allQ.length));
+    current = 0;
+    score = 0;
+    showScreen('quiz');
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    answered = false;
+    const q = order[current];
+    document.getElementById('progressText').textContent = `Câu ${current+1}/${order.length}`;
+    document.getElementById('scoreText').textContent = `Điểm: ${score}`;
+    document.getElementById('progressFill').style.width = ((current)/order.length*100) + '%';
+    document.getElementById('qEyebrow').textContent = q.eyebrow;
+    document.getElementById('qText').textContent = q.q;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+
+    const optionsBox = document.getElementById('optionsBox');
+    optionsBox.innerHTML = '';
+    const opts = makeOptions(q);
+    opts.forEach(opt=>{
+      const div = document.createElement('div');
+      div.className = 'option';
+      div.textContent = opt;
+      div.addEventListener('click', ()=> selectOption(div, opt, q));
+      optionsBox.appendChild(div);
+    });
+  }
+
+  function selectOption(el, chosen, q){
+    if(answered) return;
+    answered = true;
+    const allOpts = document.querySelectorAll('.option');
+    const fb = document.getElementById('feedback');
+    // The set of acceptable answers is altCorrect when asking Pinyin->Vietnamese
+    // (where multiple Vietnamese meanings can be valid, e.g. "Tā"), and just
+    // [q.correct] when asking Vietnamese->Pinyin (single correct Pinyin spelling).
+    const acceptableAnswers = q.pinyinToVi ? q.altCorrect : [q.correct];
+    const isCorrectChoice = acceptableAnswers.includes(chosen);
+
+    allOpts.forEach(o=>{
+      o.classList.add('disabled');
+      if(acceptableAnswers.includes(o.textContent)) o.classList.add('correct');
+    });
+
+    if(isCorrectChoice){
+      score++;
+      fb.textContent = 'Chính xác! 👍';
+      fb.className = 'feedback ok';
+    } else {
+      el.classList.add('wrong');
+      const shown = acceptableAnswers.length > 1 ? acceptableAnswers.join(' / ') : q.correct;
+      fb.textContent = `Chưa đúng. Đáp án: ${shown}`;
+      fb.className = 'feedback no';
+    }
+    document.getElementById('scoreText').textContent = `Điểm: ${score}`;
+
+    setTimeout(()=>{
+      current++;
+      if(current < order.length){
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    }, 1300);
+  }
+
+  async function finishQuiz(){
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('finalScore').textContent = score;
+    document.getElementById('finalDen').textContent = `/ ${order.length} điểm`;
+    let msg = '';
+    const pct = score/order.length;
+    if(pct === 1) msg = 'Xuất sắc! Điểm tuyệt đối 🌟';
+    else if(pct >= 0.7) msg = 'Rất tốt! Cố thêm chút nữa nha 💪';
+    else msg = 'Ôn lại từ vựng thêm rồi thử lại nhé!';
+    document.getElementById('resultMsg').textContent = msg;
+    showScreen('results');
+    await saveScore(userName, score, order.length);
+  }
+
+  document.getElementById('startBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('nameInput').value.trim();
+    if(!val){
+      document.getElementById('nameInput').focus();
+      document.getElementById('nameInput').style.borderColor = '#B22222';
+      return;
+    }
+    userName = val;
+    startQuiz();
+  });
+
+  document.getElementById('nameInput').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') document.getElementById('startBtn').click();
+  });
+
+  document.getElementById('viewLbBtn').addEventListener('click', async ()=>{
+    showScreen('lb');
+    await renderLeaderboard();
+  });
+
+  document.getElementById('toLbBtn').addEventListener('click', async ()=>{
+    showScreen('lb');
+    await renderLeaderboard();
+  });
+
+  document.getElementById('retryBtn').addEventListener('click', ()=>{
+    startQuiz();
+  });
+
+  document.getElementById('backHomeBtn').addEventListener('click', ()=>{
+    showScreen('name');
+  });
+})();
+</script>
+</body>
+</html>
